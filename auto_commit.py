@@ -35,12 +35,12 @@ def write_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=4)
 
-def run_git_command(command):
+def run_git_command(command_list):
     """Runs a git command using subprocess."""
     try:
-        subprocess.run(command, check=True, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.run(command_list, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
-        print(f"Error running command: {command}")
+        print(f"Error running command: {' '.join(command_list)}")
         print(e.stderr.decode("utf-8"))
         raise
 
@@ -54,18 +54,18 @@ def make_commit(day, commit_num, total_commits, is_last_commit=False, next_day=N
         f.write(f"Day {day} - Commit {commit_num}/{total_commits} | Timestamp: {timestamp} | Rand: {random_text}\n")
 
     # Stage the log file
-    run_git_command(f"git add {LOG_FILE}")
+    run_git_command(["git", "add", LOG_FILE])
 
     # If this is the last commit of the day, update the state file and stage it
     if is_last_commit and next_day is not None:
         state = read_state()
         state["current_day"] = next_day
         write_state(state)
-        run_git_command(f"git add {STATE_FILE}")
+        run_git_command(["git", "add", STATE_FILE])
 
     # Create the commit
     commit_msg = f"Auto commit: Day {day} - Commit {commit_num} of {total_commits}"
-    run_git_command(f"git commit -m \"{commit_msg}\"")
+    run_git_command(["git", "commit", "-m", commit_msg])
     print(f"Successfully created commit: {commit_msg}")
 
 def main():
