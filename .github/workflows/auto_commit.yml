@@ -1,0 +1,37 @@
+name: Automated Daily Commits
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Allows manual triggering from the GitHub Actions tab
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Ensure action can push back to the repository
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Run Auto Commit Script
+        run: python auto_commit.py
+
+      - name: Push Changes
+        run: |
+          # The python script commits changes locally. We just need to push them here.
+          git push
