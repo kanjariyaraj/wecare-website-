@@ -1,0 +1,30 @@
+name: Daily Automated Commits
+
+on:
+  schedule:
+    # Run every day at 10:00 AM UTC
+    - cron: '0 10 * * *'
+  workflow_dispatch: # Allow manual trigger from GitHub UI
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to push commits back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Ensure we checkout the full history to make commits
+          fetch-depth: 0
+          # We don't want to use a detached head, but check out the default branch directly
+          ref: ${{ github.ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Automation Script
+        run: python auto_commit.py
