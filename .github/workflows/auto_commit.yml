@@ -1,0 +1,35 @@
+name: Auto Commit Loop
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every day
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allows you to run this workflow manually from the Actions tab
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Important to allow pushing commits back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Needs full history if we need to see previous commits, but a depth of 1 is fine here.
+          fetch-depth: 1
+          # Optional: Use a Personal Access Token if triggering other actions is needed
+          # token: ${{ secrets.PAT }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run automation script
+        run: python auto_commit.py
+        env:
+          # Optional env vars if you want the script to pick them up
+          GIT_USER_NAME: github-actions[bot]
+          GIT_USER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
