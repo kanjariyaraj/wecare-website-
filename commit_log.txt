@@ -1,0 +1,2 @@
+# Commit Log
+This file tracks the automated commits made by the auto-commit script.
