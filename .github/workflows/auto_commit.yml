@@ -1,0 +1,30 @@
+name: Automated Commit Loop
+
+on:
+  schedule:
+    # Runs at 12:00 UTC every day
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows manual triggering from the Actions tab
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Need write permission to push commits
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch all history so git push works properly
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Auto Commit Script
+        run: python auto_commit.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
