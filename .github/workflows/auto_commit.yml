@@ -1,0 +1,33 @@
+name: Auto Commit Loop
+
+on:
+  schedule:
+    # Run every day at 00:00 UTC
+    - cron: '0 0 * * *'
+  # Allow manual trigger
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Checkout with a token that can push, standard GITHUB_TOKEN is usually fine
+          # if workflow permissions are set to 'Read and write permissions'
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Run Auto Commit Script
+        env:
+          GITHUB_ACTIONS: "true"
+        run: |
+          python auto_commit.py
