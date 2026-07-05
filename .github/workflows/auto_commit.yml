@@ -1,0 +1,28 @@
+name: Auto Commit Loop
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # Run at 12:00 UTC daily
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  auto_commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Run auto commit script
+        run: python auto_commit.py
+
+      - name: Push changes
+        run: |
+          git push
