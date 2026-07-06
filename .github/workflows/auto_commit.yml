@@ -1,0 +1,30 @@
+name: Auto Commit
+
+on:
+  schedule:
+    # Runs at 12:00 UTC every day
+    - cron: '0 12 * * *'
+  workflow_dispatch: # Allows running manually from the Actions tab
+
+jobs:
+  auto-commit:
+    runs-on: ubuntu-latest
+
+    # Needs read and write permissions to push to the repo
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          # Fetch full history to ensure pushing back works seamlessly
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Auto Commit Script
+        run: python auto_commit.py
